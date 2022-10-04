@@ -23,7 +23,8 @@ function getImgShuffled(){
                     foreach($imgPerExtension as $img){
     
                         // Si ce n'est pas l'image qui cache les autres
-                        if ($img !== $imgDir . "/front-face." . $extension) {
+                        if ($img !== $imgDir . "/front-face.jpg" &&
+                            $img !== $imgDir . "/background_image.jpg") {
                             
                             // Stockage des images
                             $allImg[] = $img;
