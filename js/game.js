@@ -1,5 +1,8 @@
 const game = {
     allContainerImg : [],
+    containerGame: {},
+    winContainerELement: {},
+    restartButtonElement: {},
 
     // Contient le conteneur de la première image retournée
     firstTarget: {},
@@ -27,6 +30,12 @@ const game = {
     init: function(){
         // Sélectionne tout les conteneurs d'img
         game.allContainerImg = document.querySelectorAll('.container-img');
+        // Sélectionne le conteneur du jeu
+        game.containerGame = document.querySelector('.container-game');
+        // Sélectionne la div victoire
+        game.winContainerELement = document.querySelector('.win');
+        // Sélectionne le boutton 
+        game.restartButtonElement = document.querySelector('.win button');
         
         // Ajout d'un listener sur chaque conteneur d'image
         game.addEventCanSelect()
@@ -71,7 +80,7 @@ const game = {
             
             game.canSelect = true; 
         }
-        console.log(game.canSelect);
+
 
         // Si la carte sélectionnée n'est pas déjà retournée
         if(!event.currentTarget.classList.contains('selected')){
@@ -154,28 +163,23 @@ const game = {
      * Affiche la div de victoire
      */
     showWinElement : function(){
-        const containerGame = document.querySelector('.container-game');
-        const winContainerELement = document.querySelector('.win');
-        // Affiche la div de victoire
-        winContainerELement.classList.remove("hidden", "display-none");
-        console.log("victoire");
         
-        const restartButtonElement = document.querySelector('.win button');
-        console.log(restartButtonElement);
+        // Affiche la div de victoire
+        game.winContainerELement.classList.remove("hidden", "display-none");
         
         // Permet de recommencer le jeu
-        console.log("test de repeat");
-        restartButtonElement.addEventListener('click',() => game.handleRestartGame(containerGame, winContainerELement));
+        game.restartButtonElement.addEventListener('click',game.handleRestartGame);
         
     },
     /**
      * Retourne toutes les cartes, mélange les cartes et cache la div de victoire
-     * @param {node element} containerGame Conteneur du jeu
-     * @param {node element} winContainer Div de victoire
      */
-    handleRestartGame: function (containerGame, winContainer) { 
+    handleRestartGame: function () { 
+
+        // Suppression de l'évènement pour ne pas les accumuler
+        game.restartButtonElement.removeEventListener('click', game.handleRestartGame);
         // Active l'animation de fermeture de la div victoire
-        winContainer.classList.add('hidden');
+        game.winContainerELement.classList.add('hidden');
 
         // Retourne toutes les cartes face cachée
         for(let index = 0 ; index < game.allContainerImg.length; index ++){
@@ -185,15 +189,20 @@ const game = {
         // Après l'animation de retournement des cartes et de la fermeture de la div victoire
         setTimeout(() => {
             // Mélange les cartes
-            for(let index = containerGame.children.length; index >=0; index--){
-                containerGame.appendChild(containerGame.children[Math.floor(Math.random() *index)]);
+            for(let index = game.containerGame.children.length; index >=0; index--){
+                game.containerGame.appendChild(game.containerGame.children[Math.floor(Math.random() *index)]);
             }
             // Enlève la div victoire cachée
-            winContainer.classList.add('display-none')
-            console.log("repeat");
-            game.addUserResult();
+            game.winContainerELement.classList.add('display-none')
+
+            // affiche le résultat de l'utilisateur
+            game.showUserResult();
+
+            // Réinitialisation du nombre de coup et actualise l'affichage
             game.userMove = 0;
             game.refreshUserMove();
+
+            // Incremente le nombre de partie et autorise le joueur à cliquer
             game.gameCounter++;
             game.canSelect = true
 
@@ -201,38 +210,50 @@ const game = {
             game.addEventCanSelect();
         },1000); 
      },
-     addUserResult: function(){
-         const theadRowElement = document.querySelector('thead tr');
-         const tbodyRowElement = document.querySelector('tbody tr');
-         const allCellsElement = document.querySelectorAll('tr>*');
-         if(game.lastFiveGames.length > 5){
-             game.lastFiveGames.splice(0, 1);
-             game.lastFiveGames.push(result);
-             console.log("test");
-            }
+    /**
+     * Structure et affiche le tableau des scores
+     */
+     showUserResult: function(){
+
+        const tbodyElement = document.querySelector('tbody');
+        const allTrElement = document.querySelectorAll('tr');
+
+        // Si l'objet contient 5 valeurs ou plus
+        if(Object.keys(game.lastFiveGames).length >= 5){
+
+            // Supprime la première valeur
+            delete game.lastFiveGames[game.gameCounter - 5];
+        }
+
+        // Ajoute "partie n°" : "nombre de coups" à l'objet
         game.lastFiveGames[`${game.gameCounter}`] = game.userMove;
-        console.log(game.userMove);
-        console.log(game.lastFiveGames[1]);
         
-        
-        if(allCellsElement.length > 0){
-            for (let index = 0; index < allCellsElement.length; index++) {
-                allCellsElement[index].remove();  
+        // S'il y a des "tr" dans la table des scores
+        if(allTrElement.length > 0){
+
+            // Supprime toutes les lignes déjà présentes
+            for (let index = 0; index < allTrElement.length; index++) {
+                allTrElement[index].remove();  
             }
         }
+
+        // Pour chaque valeur dans l'objet
         for (let value in game.lastFiveGames) {
+            const trElement = document.createElement('tr');
+            const newGameCell = document.createElement('td');
+            const newScoreCell = document.createElement('td');
 
-            const newHeadCell = document.createElement('th');
-            const newBodyCell = document.createElement('td');
+            newGameCell.textContent = `Partie ${value}`;
+            newScoreCell.textContent = game.lastFiveGames[value];
 
-            newHeadCell.textContent = `Partie ${value}`;
-            newBodyCell.textContent = game.lastFiveGames[value];
-
-            theadRowElement.appendChild(newHeadCell);
-            tbodyRowElement.appendChild(newBodyCell);
+            // Ajoute le numéro de la partie puis le nombre de coups sur la même ligne
+            trElement.appendChild(newGameCell);
+            trElement.appendChild(newScoreCell);
+            // Ajoute la ligne au tbody
+            tbodyElement.appendChild(trElement);
 
         }
-     }    
+     }  
 
 }
 document.addEventListener('DOMContentLoaded',game.init());

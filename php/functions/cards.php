@@ -1,6 +1,10 @@
 <?php
-
-function getImgShuffled(){
+/**
+ * Récupère les images dans le dossier "img", sauf "background_image" et "front_face", puis les mélanges
+ *
+ * @return array Tableau d'images mélangées
+ */
+function getImgAndShuffled(){
 
     $imgDir = "../img";
     $arrayExtensions = ['jpeg', 'jpg', 'png'];
@@ -23,7 +27,7 @@ function getImgShuffled(){
                     foreach($imgPerExtension as $img){
     
                         // Si ce n'est pas l'image qui cache les autres
-                        if ($img !== $imgDir . "/front-face.jpg" &&
+                        if ($img !== $imgDir . "/front_face.jpg" &&
                             $img !== $imgDir . "/background_image.jpg") {
                             
                             // Stockage des images
