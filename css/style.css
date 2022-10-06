@@ -33,11 +33,11 @@ section.userMove{
 ------------------------------*/
 section.score {
     text-align: center;
+    font-weight: bold;
 }
 legend {
     font-size: 1.8rem;
     color: #dd6072;
-    font-weight: bold;
     margin: 1rem;
 }
 table {
@@ -46,16 +46,9 @@ table {
 }
 td {
     padding: 1rem 1.5rem;
-    
-}
-td:nth-child(1){
-    font-weight: bold;
     color: #f58163;
 }
 
-td:nth-child(2){
-    color: #f4ca15;
-}
 
 /*------------------------------
           Section Game
@@ -104,7 +97,7 @@ td:nth-child(2){
 }
 
 .container-img .front-face{
-    background-image: url("../img/front-face.jpg");
+    background-image: url("../img/front_face.jpg");
     background-size: cover;
     background-position: center;
 }

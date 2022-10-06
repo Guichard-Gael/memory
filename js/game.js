@@ -4,17 +4,17 @@ const game = {
     winContainerELement: {},
     restartButtonElement: {},
 
-    // Contient le conteneur de la première image retournée
-    firstTarget: {},
+    // Conteneur de la première image retournée
+    firstCardTarget: {},
 
-    // Contient le conteneur de la deuxième image retournée
-    secondTarget:{},
+    // Conteneur de la deuxième image retournée
+    secondCardTarget:{},
 
-    // Content la "src" de la première image retournée
-    firstChoice: "",
+    // "src" de la première image retournée
+    srcFirstImgTarget: "",
 
-    // Content la "src" de la deuxième image retournée
-    secondChoice: "",
+    // "src" de la deuxième image retournée
+    srcSecondImgTarget: "",
 
     // Permet à l'utilisateur de cliquer sur un autre élément
     canSelect: true,
@@ -67,31 +67,25 @@ const game = {
         game.canSelect = false;
 
         // Aucune carte n'est retournée
-        if (! game.firstChoice) {
+        if (! game.srcFirstImgTarget) {
 
-            // Stock le conteneur de l'image sélectionnée
-            game.firstTarget = event.currentTarget;
-
-            // Retourne l'élément face visible
-            game.firstTarget.classList.add('selected')
-            
-            // Récupère le "src" de l'image
-            game.firstChoice = game.firstTarget.querySelector('.back-face img').attributes.src.textContent;
-            
+            game.firstCardTarget = game.stockCardTarget(event);
+            game.srcFirstImgTarget = game.stockSrcImgTarget(game.firstCardTarget);
+            console.log(game.firstCardTarget);
+            console.log(game.srcFirstImgTarget);
             game.canSelect = true; 
         }
 
 
         // Si la carte sélectionnée n'est pas déjà retournée
         if(!event.currentTarget.classList.contains('selected')){
-            game.secondTarget = event.currentTarget;
-            game.secondChoice = game.secondTarget.querySelector('.back-face img').attributes.src.textContent;
-            game.secondTarget.classList.add('selected')
-            
+
+            game.secondCardTarget = game.stockCardTarget(event);
+            game.srcSecondImgTarget = game.stockSrcImgTarget(game.secondCardTarget);
+            console.log(game.secondCardTarget);
+            console.log(game.srcSecondImgTarget);
             game.imgFound();
-            
             game.resetChoiceAndTarget();  
-            
             game.userMove++;
             game.refreshUserMove();
         }
@@ -108,17 +102,40 @@ const game = {
         
     },
     /**
+     * Renvoie le conteneur de la carte qui a été retournée.
+     * @param {*} event 
+     * @returns Conteneur de la carte retournée.
+     */
+    stockCardTarget: function(event){
+        // Stock le conteneur de l'image sélectionnée
+        const cardTarget = event.currentTarget;
+
+        // Retourne l'élément face visible
+        cardTarget.classList.add('selected')
+        return cardTarget;
+    },
+    /**
+     * Renvoie la "src" de l'image retournée
+     * @param {Node element} cardTarget Conteneur de l'image retournée
+     * @returns Renvoie la "src" de l'image retournée
+     */
+    stockSrcImgTarget: function(cardTarget){
+        // Récupère le "src" de l'image
+        const srcCardImgTarget = cardTarget.querySelector('.back-face img').attributes.src.textContent;
+        return srcCardImgTarget;
+    },
+    /**
      * Vérifie si les deux images sont identiques et leurs ajoute la classe "found" si c'est le cas
      */
      imgFound: function () { 
         // Les deux cartes sont identiques
-        if(game.firstChoice === game.secondChoice){
-            game.firstTarget.classList.add('found');
-            game.secondTarget.classList.add('found');
+        if(game.srcFirstImgTarget === game.srcSecondImgTarget){
+            game.firstCardTarget.classList.add('found');
+            game.secondCardTarget.classList.add('found');
 
             // Suppression de l'évènement pour que les images ne soit plus cliquable
-            game.firstTarget.removeEventListener("click", game.handlecanSelect);
-            game.secondTarget.removeEventListener("click", game.handlecanSelect);
+            game.firstCardTarget.removeEventListener("click", game.handlecanSelect);
+            game.secondCardTarget.removeEventListener("click", game.handlecanSelect);
 
         }
     },
@@ -127,13 +144,13 @@ const game = {
      */
     resetChoiceAndTarget: function () { 
         // Deux cartes ont été retournées, on remet à zéro les choix et enlève les classes "selected"
-        game.firstChoice = "";
-        game.secondChoice = "";   
+        game.srcFirstImgTarget = "";
+        game.srcSecondImgTarget = "";   
 
         // Retourne les cartes révélées après une seconde
         setTimeout(()=>{
-            game.firstTarget.classList.remove('selected');       
-            game.secondTarget.classList.remove('selected'); 
+            game.firstCardTarget.classList.remove('selected');       
+            game.secondCardTarget.classList.remove('selected'); 
             game.canSelect = true
         },1000);
         
@@ -189,9 +206,7 @@ const game = {
         // Après l'animation de retournement des cartes et de la fermeture de la div victoire
         setTimeout(() => {
             // Mélange les cartes
-            for(let index = game.containerGame.children.length; index >=0; index--){
-                game.containerGame.appendChild(game.containerGame.children[Math.floor(Math.random() *index)]);
-            }
+            game.shuffleCard();
             // Enlève la div victoire cachée
             game.winContainerELement.classList.add('display-none')
 
@@ -210,32 +225,27 @@ const game = {
             game.addEventCanSelect();
         },1000); 
      },
+     /**
+      * Mélange les cartes
+      */
+     shuffleCard: function () { 
+
+        for(let index = game.containerGame.children.length; index >=0; index--){
+            game.containerGame.appendChild(game.containerGame.children[Math.floor(Math.random() *index)]);
+        }
+      },
     /**
      * Structure et affiche le tableau des scores
      */
      showUserResult: function(){
 
         const tbodyElement = document.querySelector('tbody');
-        const allTrElement = document.querySelectorAll('tr');
-
-        // Si l'objet contient 5 valeurs ou plus
-        if(Object.keys(game.lastFiveGames).length >= 5){
-
-            // Supprime la première valeur
-            delete game.lastFiveGames[game.gameCounter - 5];
-        }
+        game.deleteUserScore();
 
         // Ajoute "partie n°" : "nombre de coups" à l'objet
         game.lastFiveGames[`${game.gameCounter}`] = game.userMove;
-        
-        // S'il y a des "tr" dans la table des scores
-        if(allTrElement.length > 0){
-
-            // Supprime toutes les lignes déjà présentes
-            for (let index = 0; index < allTrElement.length; index++) {
-                allTrElement[index].remove();  
-            }
-        }
+    
+        game.deleteAllRow();
 
         // Pour chaque valeur dans l'objet
         for (let value in game.lastFiveGames) {
@@ -253,7 +263,35 @@ const game = {
             tbodyElement.appendChild(trElement);
 
         }
-     }  
+    },
+    /**
+     * Supprime la premère valeur d'un objet si celui-ci en à 5 ou plus
+     */
+    deleteUserScore: function(){ 
+
+        // Si l'objet contient 5 valeurs ou plus
+        if(Object.keys(game.lastFiveGames).length >= 5){
+
+            // Supprime la première valeur
+            delete game.lastFiveGames[game.gameCounter - 5];
+        }
+    },
+    /**
+     * Supprime les lignes dans le tableau des scores
+     */
+    deleteAllRow: function(){
+
+        const allTrElement = document.querySelectorAll('tr');
+
+        // S'il y a des "tr" dans la table des scores
+        if(allTrElement.length > 0){
+
+            // Supprime toutes les lignes déjà présentes
+            for (let index = 0; index < allTrElement.length; index++) {
+                allTrElement[index].remove();  
+            }
+        }
+    }
 
 }
 document.addEventListener('DOMContentLoaded',game.init());
