@@ -4,294 +4,227 @@ const game = {
     winContainerELement: {},
     restartButtonElement: {},
 
-    // Conteneur de la première image retournée
+    // Container of the first image returned
     firstCardTarget: {},
 
-    // Conteneur de la deuxième image retournée
+    // Container of the second image returned
     secondCardTarget:{},
 
-    // "src" de la première image retournée
+    // "src" dof the first image returned
     srcFirstImgTarget: "",
 
-    // "src" de la deuxième image retournée
+    // "src" of the second image returned
     srcSecondImgTarget: "",
 
-    // Permet à l'utilisateur de cliquer sur un autre élément
+    // The user can select another card
     canSelect: true,
 
-    // Nombre de coup de l'utilisateur
-    userMove : 0,
-
-    // Compteur de partie
+    // Number of games
     gameCounter: 1,
 
-    // Résultat des 5 dernières parties
-    lastFiveGames : {},
     init: function(){
-        // Sélectionne tout les conteneurs d'img
+        // Select all image containers
         game.allContainerImg = document.querySelectorAll('.container-img');
-        // Sélectionne le conteneur du jeu
+        // Select the game container
         game.containerGame = document.querySelector('.container-game');
-        // Sélectionne la div victoire
+        // Select the win div
         game.winContainerELement = document.querySelector('.win');
-        // Sélectionne le boutton 
+        // Select the restart button
         game.restartButtonElement = document.querySelector('.win button');
         
-        // Ajout d'un listener sur chaque conteneur d'image
-        game.addEventCanSelect()
+        // Add a listener on all image containers
+        game.addHandlerCanSelect();
     },
-    /**
-     * Ajoute un évènement sur chaque conteneur d'image
-     */
-    addEventCanSelect : function () { 
-        for(const containerImg of game.allContainerImg){
 
+    /**
+     * Add a listener on each image container
+     */
+    addHandlerCanSelect : function () { 
+        for(const containerImg of game.allContainerImg){
             containerImg.addEventListener('click', game.handlecanSelect);
-            
         }
     },
+
     /**
-     * Savoir si l'utilisateur à le droit de retourner une carte
-     * @param {*} event 
+     * If the user can return another card
+     * @param {*} event The event on clicking on the image container
      */
     handlecanSelect: function(event){
         if (game.canSelect){
             game.revealImg(event);
         }
     },
+
     /**
-     * Retourne une carte et stock des informations sur l'élément retourné
-     * @param {*} event 
+     * Returns and stores the card selected by the user
+     * @param {*} event The event on clicking on the image container
      */
     revealImg: function (event) {
         game.canSelect = false;
 
-        // Aucune carte n'est retournée
+        // If no card is already turned over
         if (! game.srcFirstImgTarget) {
 
             game.firstCardTarget = game.stockCardTarget(event);
             game.srcFirstImgTarget = game.stockSrcImgTarget(game.firstCardTarget);
-            console.log(game.firstCardTarget);
-            console.log(game.srcFirstImgTarget);
             game.canSelect = true; 
         }
 
-
-        // Si la carte sélectionnée n'est pas déjà retournée
+        // If the selected card isn't already turned over
         if(!event.currentTarget.classList.contains('selected')){
 
             game.secondCardTarget = game.stockCardTarget(event);
             game.srcSecondImgTarget = game.stockSrcImgTarget(game.secondCardTarget);
-            console.log(game.secondCardTarget);
-            console.log(game.srcSecondImgTarget);
             game.imgFound();
             game.resetChoiceAndTarget();  
-            game.userMove++;
-            game.refreshUserMove();
+            score.userMove++;
+            score.refreshUserMove();
         }
-        // Si la carte sélectionnée est déjà retournée
+        // If the selected card is already turned over
         else{
             game.canSelect = true;
         }
         
         if(game.isUserWin()){
-            // Le joueur à gagné
+            // The user win
             game.showWinElement();
         }
-    
-        
     },
+
     /**
-     * Renvoie le conteneur de la carte qui a été retournée.
-     * @param {*} event 
-     * @returns Conteneur de la carte retournée.
+     * Returns and return the image container selected by the user
+     * @param {*} event The event on clicking on the image container
+     * @returns The image container selected by the user
      */
     stockCardTarget: function(event){
-        // Stock le conteneur de l'image sélectionnée
+        // Get the image container selected
         const cardTarget = event.currentTarget;
 
-        // Retourne l'élément face visible
+        // Returns the card selected
         cardTarget.classList.add('selected')
+
+        // Return the image container selected
         return cardTarget;
     },
+
     /**
-     * Renvoie la "src" de l'image retournée
-     * @param {Node element} cardTarget Conteneur de l'image retournée
-     * @returns Renvoie la "src" de l'image retournée
+     * Returns the "src" of the image selected
+     * @param {Node element} cardTarget The image container selected
+     * @returns Returns the "src" of the image selected
      */
     stockSrcImgTarget: function(cardTarget){
-        // Récupère le "src" de l'image
+        // Get the "src" of the image selected
         const srcCardImgTarget = cardTarget.querySelector('.back-face img').attributes.src.textContent;
+
         return srcCardImgTarget;
     },
+
     /**
-     * Vérifie si les deux images sont identiques et leurs ajoute la classe "found" si c'est le cas
+     * Checks if the two images are identical
      */
      imgFound: function () { 
-        // Les deux cartes sont identiques
+        // The two images are identical
         if(game.srcFirstImgTarget === game.srcSecondImgTarget){
             game.firstCardTarget.classList.add('found');
             game.secondCardTarget.classList.add('found');
 
-            // Suppression de l'évènement pour que les images ne soit plus cliquable
+            // Remove the listener
             game.firstCardTarget.removeEventListener("click", game.handlecanSelect);
             game.secondCardTarget.removeEventListener("click", game.handlecanSelect);
-
         }
     },
+
     /**
-     * Vide les variables et retourne les deux cartes révélées
+     * Hide the cards that are revealed
      */
     resetChoiceAndTarget: function () { 
-        // Deux cartes ont été retournées, on remet à zéro les choix et enlève les classes "selected"
+        // Reset the choices
         game.srcFirstImgTarget = "";
         game.srcSecondImgTarget = "";   
 
-        // Retourne les cartes révélées après une seconde
+        // Hide the cards that are revealed, after one second
         setTimeout(()=>{
             game.firstCardTarget.classList.remove('selected');       
             game.secondCardTarget.classList.remove('selected'); 
-            game.canSelect = true
-        },1000);
-        
+            game.canSelect = true;
+        },1000);   
     },
-    /**
-     * Actualise l'affichage du nombre de coup de l'utilisateur
-     */
-    refreshUserMove: function () { 
-        const numberUserMoveElement = document.querySelector('.numberUserMove');
-        numberUserMoveElement.textContent = game.userMove;
-    },
-    //  Vérifie si toutes les paires sont trouvées
-    isUserWin: function () { 
-        
-        for(let index = 0 ; index < game.allContainerImg.length; index ++){
 
-            // Si l'élément de ne contient pas la classe "found"
+    /**
+     * Checks if all pairs are found
+     * 
+     * @returns boolean
+     */
+    isUserWin: function () { 
+        // For each card in the game
+        for(let index = 0 ; index < game.allContainerImg.length; index ++){
+            console.log("test boucle for");
+            // if the card has been found
             if(!game.allContainerImg[index].classList.contains('found')){
-                // Le jeu n'est pas encore fini
-                return false
+                // The game isn't over
+                console.log("test jeu continu");
+                return false;
             }
         }
-        // Toutes les paires sont trouvées, l'utilisateur à gagné
-        return true
+        console.log("test victoire");
+        // the game is over
+        return true;
     },
+
     /**
-     * Affiche la div de victoire
+     * Showing the victory div
      */
     showWinElement : function(){
-        
-        // Affiche la div de victoire
+        // Showing the victory div
         game.winContainerELement.classList.remove("hidden", "display-none");
         
-        // Permet de recommencer le jeu
+        // Activates the restart button
         game.restartButtonElement.addEventListener('click',game.handleRestartGame);
-        
     },
+
     /**
-     * Retourne toutes les cartes, mélange les cartes et cache la div de victoire
+     * Hide and shuffle all cards
      */
     handleRestartGame: function () { 
-
-        // Suppression de l'évènement pour ne pas les accumuler
+        // Delete the event to avoid cumulating them
         game.restartButtonElement.removeEventListener('click', game.handleRestartGame);
-        // Active l'animation de fermeture de la div victoire
+        // Hide the div of victory
         game.winContainerELement.classList.add('hidden');
 
-        // Retourne toutes les cartes face cachée
+        // Turn over all cards
         for(let index = 0 ; index < game.allContainerImg.length; index ++){
             game.allContainerImg[index].classList.remove('found');
         }
 
-        // Après l'animation de retournement des cartes et de la fermeture de la div victoire
+        // After turn over all cards and hide the div of victory
         setTimeout(() => {
-            // Mélange les cartes
+            // Shuffle all cards
             game.shuffleCard();
-            // Enlève la div victoire cachée
+            // Remove the div of victory
             game.winContainerELement.classList.add('display-none')
 
-            // affiche le résultat de l'utilisateur
-            game.showUserResult();
+            // Displays the user's result on the left of the screen
+            score.showUserResult();
 
-            // Réinitialisation du nombre de coup et actualise l'affichage
-            game.userMove = 0;
-            game.refreshUserMove();
+            // Reset the number of user's move
+            score.userMove = 0;
+            score.refreshUserMove();
 
-            // Incremente le nombre de partie et autorise le joueur à cliquer
+            // Increases the number of games
             game.gameCounter++;
             game.canSelect = true
 
-            // Rajoute l'évènement sur toutes les cartes
-            game.addEventCanSelect();
+            // Add the listener on all image container
+            game.addHandlerCanSelect();
         },1000); 
      },
+
      /**
-      * Mélange les cartes
+      * Shuffle all cards
       */
      shuffleCard: function () { 
-
         for(let index = game.containerGame.children.length; index >=0; index--){
             game.containerGame.appendChild(game.containerGame.children[Math.floor(Math.random() *index)]);
         }
-      },
-    /**
-     * Structure et affiche le tableau des scores
-     */
-     showUserResult: function(){
-
-        const tbodyElement = document.querySelector('tbody');
-        game.deleteUserScore();
-
-        // Ajoute "partie n°" : "nombre de coups" à l'objet
-        game.lastFiveGames[`${game.gameCounter}`] = game.userMove;
-    
-        game.deleteAllRow();
-
-        // Pour chaque valeur dans l'objet
-        for (let value in game.lastFiveGames) {
-            const trElement = document.createElement('tr');
-            const newGameCell = document.createElement('td');
-            const newScoreCell = document.createElement('td');
-
-            newGameCell.textContent = `Partie ${value}`;
-            newScoreCell.textContent = game.lastFiveGames[value];
-
-            // Ajoute le numéro de la partie puis le nombre de coups sur la même ligne
-            trElement.appendChild(newGameCell);
-            trElement.appendChild(newScoreCell);
-            // Ajoute la ligne au tbody
-            tbodyElement.appendChild(trElement);
-
-        }
-    },
-    /**
-     * Supprime la premère valeur d'un objet si celui-ci en à 5 ou plus
-     */
-    deleteUserScore: function(){ 
-
-        // Si l'objet contient 5 valeurs ou plus
-        if(Object.keys(game.lastFiveGames).length >= 5){
-
-            // Supprime la première valeur
-            delete game.lastFiveGames[game.gameCounter - 5];
-        }
-    },
-    /**
-     * Supprime les lignes dans le tableau des scores
-     */
-    deleteAllRow: function(){
-
-        const allTrElement = document.querySelectorAll('tr');
-
-        // S'il y a des "tr" dans la table des scores
-        if(allTrElement.length > 0){
-
-            // Supprime toutes les lignes déjà présentes
-            for (let index = 0; index < allTrElement.length; index++) {
-                allTrElement[index].remove();  
-            }
-        }
-    }
-
+      }
 }
-document.addEventListener('DOMContentLoaded',game.init());

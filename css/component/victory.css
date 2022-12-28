@@ -1,0 +1,77 @@
+/*------------------------------
+            Victory
+------------------------------*/
+
+.win {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    font-size: 2rem;
+    color: #fff;
+    border-radius: 0.5rem;
+    background-color: rgba(0, 0, 0, 0.8);
+    animation: showDiv 0.8s ease-out;
+    z-index: 9999;
+}
+.win.hidden {
+    height: 0;
+    overflow: hidden;
+    animation: hiddenDiv 0.8s ease;
+}
+.win.hidden.display-none {
+    display: none;
+}
+
+.win p {
+    text-align: center;
+    margin: 1rem 1rem 3rem;
+    font-size: 2.5rem;
+}
+
+/* Reset button */
+.win button {
+
+    padding:2rem 3rem;
+    font-size: 2rem;
+    border-radius: 0.5rem;
+    background-color: #f58163;
+    color: #fff;
+    border: none;
+    outline: none;
+}
+.win button:hover {
+    cursor: pointer;
+    background-color: #2d91b5;
+    transition: background-color 0.7s;
+}
+.win button:active{
+    margin: 0.2rem;
+    padding: 1.8rem 2.8rem;
+}
+
+/* Animations */
+@keyframes showDiv {
+    0% {
+        opacity: 0;
+    }
+    100%{
+        opacity: 100%;
+    }
+}
+
+@keyframes hiddenDiv {
+    0% {
+        height: 50%;
+    }
+
+    100% {
+        height: 0%;
+    }
+}

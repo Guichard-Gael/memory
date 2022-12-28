@@ -1,4 +1,15 @@
 /*------------------------------
+        Section userMove
+------------------------------*/
+@import "component/score.css";
+
+/*------------------------------
+          Section Game
+------------------------------*/
+@import "component/card.css";
+@import "component/victory.css";
+
+/*------------------------------
             Général
 ------------------------------*/
 body {
@@ -11,202 +22,40 @@ body {
 }
 
 h1 {
-    font-size: 4rem;
+    font-size: 2.5rem;
     color: #f58163;
     text-align: center;
     padding: 1rem 0 2rem 0;
+    font-weight: bold;
 
 }
 
 main {
     display: flex;
+    flex-direction: column-reverse;
     justify-content: space-between;
     align-items: center;
 }
-section.score,
-section.userMove{
-    width: 25%;
-}
 
 /*------------------------------
-         Section score
+           Responsive
 ------------------------------*/
-section.score {
-    text-align: center;
-    font-weight: bold;
-}
-legend {
-    font-size: 1.8rem;
-    color: #dd6072;
-    margin: 1rem;
-}
-table {
-    font-size: 1.5rem;
-    margin: 0 auto;
-}
-td {
-    padding: 1rem 1.5rem;
-    color: #f58163;
-}
-
-
-/*------------------------------
-          Section Game
-------------------------------*/
-.container-game {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 1100px;
-    perspective: 1000px;
-    /* La perspective est par rapport au centre de l'écran */
-    perspective-origin: center;
-    margin: 0 auto;
-}
-
-.container-img {
-    margin: 0.5rem;
-    width: 150px;
-    height: 150px;
-    /* Les enfants seront positionnés dans l'espace tridimensionnel */
-    transform-style: preserve-3d;
-    transition: transform 0.8s;
-}
-
-.container-img:hover {
-    cursor: pointer;
-}
-
-.container-img.found:hover {
-    cursor: default;
-}
-
-.container-img.selected,
-.container-img.found {
-    transform: rotateY(180deg);
-}
-
-.container-img .back-face,
-.container-img .front-face{
-    /* Pour que les 2 faces soient l'une sous l'autre */
-    position: absolute;
-    /* Cache le verso de la div */
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-}
-
-.container-img .front-face{
-    background-image: url("../img/front_face.jpg");
-    background-size: cover;
-    background-position: center;
-}
-
-.container-img .back-face{
-    transform: rotateY(180deg);
-}
-
-.container-img .back-face,
-.container-img .front-face,
-.container-img img {
-    width: 100%;
-    height: 100%;
-}
-
-.container-img img {
-    object-fit: cover;
-}
-
-.container-img.found img {
-    transition: filter 1s;
-    filter:grayscale(80%);
-}
-
-/* Div victoire */
-.win {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50%;
-    height: 50%;
-    font-size: 2rem;
-    color: #fff;
-    border-radius: 0.5rem;
-    background-color: rgba(0, 0, 0, 0.8);
-    animation: showDiv 0.8s ease-out;
-    z-index: 9999;
-}
-.win.hidden {
-    height: 0;
-    overflow: hidden;
-    animation: hiddenDiv 0.8s ease;
-}
-.win.hidden.display-none {
-    display: none;
-}
-
-.win p {
-    margin-bottom: 3rem;
-    font-size: 2.5rem;
-}
-
-.win button {
-
-    padding:2rem 3rem;
-    font-size: 2rem;
-    border-radius: 0.5rem;
-    background-color: #f58163;
-    color: #fff;
-    border: none;
-    outline: none;
-}
-.win button:hover {
-    cursor: pointer;
-    background-color: #2d91b5;
-    transition: background-color 0.7s;
-}
-.win button:active{
-    margin: 0.2rem;
-    padding: 1.8rem 2.8rem;
-}
-
-/* Animations */
-@keyframes showDiv {
-    0% {
-        opacity: 0;
-    }
-    100%{
-        opacity: 100%;
+@media screen and (min-width: 900px) {
+    
+    h1 {
+        font-size: 4rem;
+        font-weight: normal;
     }
 
-}
-@keyframes hiddenDiv {
-    0% {
-        height: 50%;
+    main {
+        margin: 1rem;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
     }
 
-    100% {
-        height: 0%;
+    section.score,
+    section.userMove{
+        width: 25%;
     }
-}
-
-/*------------------------------
-          Section userMove
-------------------------------*/
-
-section.userMove {
-    text-align: center;
-}
-
-.userMove p {
-    font-size: 2rem;
-    color: #2d91b5;
-}
-.userMove p span {
-    font-weight: bold;
 }

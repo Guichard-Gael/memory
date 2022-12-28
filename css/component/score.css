@@ -1,0 +1,68 @@
+/*------------------------------
+         Section score
+------------------------------*/
+section.score {
+    text-align: center;
+    font-weight: bold;
+}
+legend {
+    font-size: 1.6rem;
+    color: #dd6072;
+    margin: 1rem;
+}
+table {
+    font-size: 1.3rem;
+    margin: 0 auto;
+}
+td {
+    padding: 1rem 1.3rem;
+    color: #f58163;
+}
+
+/*------------------------------
+        Section userMove
+------------------------------*/
+
+section.userMove {
+    text-align: center;
+}
+
+.userMove p {
+    font-size: 1rem;
+    color: #2d91b5;
+}
+.userMove p span {
+    font-weight: bold;
+}
+
+/*------------------------------
+           Responsive
+------------------------------*/
+
+@media screen and (min-width: 900px) {
+
+    legend {
+        font-size: 1.5rem;
+    }
+    table {
+        font-size: 1.2rem;
+    }
+
+    .userMove p {
+        font-size: 1.5rem;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+
+    legend {
+        font-size: 1.8rem;
+    }
+    table {
+        font-size: 1.5rem;
+    }
+    
+    .userMove p {
+        font-size: 2rem;
+    }
+}
